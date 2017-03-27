@@ -13,10 +13,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
-#include <libgen.h>
 #include <limits.h>
+#ifdef _MSC_VER
+#include "w32\w32.h"
+#else
+#include <libgen.h>
 #include <unistd.h>
 #include <cpuid.h>
+#endif
+
 
 #include "aes.h"
 #include "trace.h"
@@ -311,14 +316,21 @@ int decryptsrf(char *srffile, char *outdir)
 
    pbinit(&pb);
 
-   pb.fdwrite = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+#ifdef _MSC_VER
+   int wmode = _S_IWRITE;
+   int binaryflag =  _O_BINARY;
+#else
+   mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+   int binaryflag = 0;
+#endif
+   pb.fdwrite = open(outfile, O_WRONLY | O_CREAT | O_TRUNC | binaryflag, wmode);
    if(pb.fdwrite == -1)
    {
       trace(TRC_ERROR, "Cannot open %s for writing", outfile);
       return 1;
    }
 
-   pb.fdread = open(srffile, O_RDONLY);
+   pb.fdread = open(srffile, O_RDONLY | binaryflag);
    if(pb.fdread == -1)
    {
       trace(TRC_ERROR, "Cannot open %s for reading", srffile);
@@ -449,9 +461,8 @@ int main(int argc, char *argv[])
    /* set and verify outdir */
    if(strlen(outdir) < 1)
       strcpy(outdir, dirname(argv[optind]));
-
    if(outdir[strlen(outdir)-1] != '/')
-      strcat(outdir, "/");
+	   strcat(outdir, "/");
 
    trace(TRC_INFO, "AES-NI CPU support %s", enable_aesni ? "enabled" : "disabled");
 

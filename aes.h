@@ -36,8 +36,8 @@ extern void block_decrypt_aes(block_state *self, u8 *in, u8 *out);
 /* AES-NI */
 extern void block_init_aesni(block_state *state, unsigned char *key, int keylen);
 extern void block_finalize_aesni(block_state* self);
-extern void block_encrypt_aesni(block_state *self, u8 *in, u8 *out);
-extern void block_decrypt_aesni(block_state *self, u8 *in, u8 *out);
+extern void block_encrypt_aesni(block_state *self, const u8 *in, u8 *out);
+extern void block_decrypt_aesni(block_state *self, const u8 *in, u8 *out);
 
 #endif /* __AES_H */
 

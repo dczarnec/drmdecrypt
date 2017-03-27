@@ -13,7 +13,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#ifdef _MSC_VER
+typedef unsigned int ssize_t;
+#include <io.h>
+#else
 #include <unistd.h>
+#endif
 
 #include "buffer.h"
 
@@ -24,7 +29,7 @@ int pbinit(struct packetbuffer *pb)
 
    pbfree(pb);
 
-   pb->buffer = malloc(BUFFERSIZE);
+   pb->buffer = (char *)malloc(BUFFERSIZE);
    if(pb->buffer == NULL){
       printf("malloc failed\n");
       return 1;
