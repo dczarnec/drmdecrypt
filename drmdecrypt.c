@@ -320,7 +320,7 @@ int decryptsrf(char *srffile, char *outdir)
    int wmode = _S_IWRITE;
    int binaryflag =  _O_BINARY;
 #else
-   mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
+   mode_t wmode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
    int binaryflag = 0;
 #endif
    pb.fdwrite = open(outfile, O_WRONLY | O_CREAT | O_TRUNC | binaryflag, wmode);
@@ -461,8 +461,9 @@ int main(int argc, char *argv[])
    /* set and verify outdir */
    if(strlen(outdir) < 1)
       strcpy(outdir, dirname(argv[optind]));
+
    if(outdir[strlen(outdir)-1] != '/')
-	   strcat(outdir, "/");
+      strcat(outdir, "/");
 
    trace(TRC_INFO, "AES-NI CPU support %s", enable_aesni ? "enabled" : "disabled");
 
